@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* ── Google Fonts ─────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap");
+
+/* ── Design Tokens ───────────────────────────────────── */
+:root {
+  /* Brand */
+  --color-pink:        #FA53A4;
+  --color-pink-dim:    #B00D6A;
+  --color-magenta:     #EC4899;
+  --color-magenta-glow: rgba(236, 72, 153, 0.6);
+
+  /* Surfaces */
+  --color-surface:     #F9F5FA;
+  --color-surface-high:#E4E1E7;
+  --color-surface-highest:#DEDCE1;
+  --color-surface-dim: #D6D3D9;
+
+  /* Text */
+  --color-on-surface:  #2F2E31;
+  --color-on-surface-variant: #5C5B5E;
+  --color-outline:     #77767A;
+  --color-outline-variant: #AEACB0;
+
+  /* Input */
+  --color-input-bg:    #DADDBA00;
+
+  /* Fonts */
+  --font-headline: "Epilogue", sans-serif;
+  --font-body:     "Inter", sans-serif;
+  --font-mono:     "JetBrains Mono", monospace;
+}
+
+/* ── Base ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Signature Gradient ──────────────────────────────── */
+.signature-gradient {
+  background: linear-gradient(135deg, #EC4899, #8B5CF6);
+}
+
+/* ── Neon Glow Button ─────────────────────────────────── */
+.neon-glow-btn {
+  box-shadow: 0 10px 40px -15px var(--color-magenta-glow);
+}
+
+/* ── Glass Card ──────────────────────────────────────── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+}
+
+/* ── Custom Scrollbar ─────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-outline-variant); border-radius: 99px; }
