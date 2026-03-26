@@ -15,7 +15,7 @@ export const BrandPanel: React.FC = () => (
       <img
         alt="High-fashion editorial photography"
         className="w-full h-full object-cover grayscale brightness-75 scale-105"
-        src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5sr1lDtbSdWeAWETXi_paejfdSnBKn2OuNsmsO9HdNaDKg9f4uWXcC3ASZvzQzUzVFX0yflLDizojaM1VcumGyOx-wNryBpU3PJ6WPEpi-zyXml4O9MtlhTY3PN9g2c-tyEVGjXQdmqunmAaOXUd_390a-TtmTnpgFbh9CYJAYVRlMu1Aq3Y1PUfxSu_ucu_HpeDTBBvvcXMNcp9Oggo1GFem_kPweI5jHgJaaGrYLNer7RbezKI9f9M84kV7LS2Ar-8T6Tu"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5sr1IdtbSdWeAWETXi_paejfdSnBKn2OuNsmsO9HdNaOKg9f4uWXcC3ASZvzQzUZVFX0yf1LDizojaMiVcumGyOx-wNny8pU3PJ6WPEpi-zyXml4O9MtlBftyhIY3PN9g2c-tyEVGjXQdmqwnmAaOXUd_39Oa-TtmTnpgfbh9CYJAYVRlMu1Aq3Y1PUfxSu_ucu_HpeDTBBVvoXMNcp9Oqgo1Gfem__kPWeI5jHqJaaGrYtNer7RbezKI9f9M84kV7LS2Ar-8T6Tu"
         style={{ objectPosition: "center top" }}
       />
     </div>
