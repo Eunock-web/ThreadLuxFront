@@ -17,8 +17,10 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => (
 
     {/* ── Right Auth Column ──────────────────────────── */}
     <section
-      className="flex-1 flex flex-col items-center justify-center p-8 md:p-16 lg:p-24"
-      style={{ background: "var(--color-surface)" }}
+      className="flex-1 flex flex-col items-center justify-center p-8 md:p-16 lg:p-24 relative overflow-hidden"
+      style={{ 
+        background: "radial-gradient(circle at 70% 30%, rgba(250, 83, 164, 0.05), transparent 50%), radial-gradient(circle at 30% 70%, rgba(139, 92, 246, 0.05), transparent 50%), var(--color-surface)" 
+      }}
     >
       {/* Mobile brand header */}
       <div className="lg:hidden mb-12 self-start">
