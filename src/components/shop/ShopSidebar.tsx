@@ -1,7 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { productService } from "../../services/product";
 
-export const ShopSidebar: React.FC = () => {
+interface ShopSidebarProps {
+  selectedCategory: string | null;
+  onCategoryChange: (id: string | null) => void;
+}
+
+export const ShopSidebar: React.FC<ShopSidebarProps> = ({ selectedCategory, onCategoryChange }) => {
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    productService.getCategories()
+      .then((res) => {
+        if (res.success && res.data) {
+          setCategories(res.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching categories:", err));
+  }, []);
+
   return (
     <aside className="w-64 flex-shrink-0 hidden lg:block">
       {/* Filters Header */}
@@ -9,19 +27,22 @@ export const ShopSidebar: React.FC = () => {
         <h2 className="font-bold text-slate-900 text-sm tracking-widest uppercase" style={{ fontFamily: "var(--font-mono)" }}>
           Filtres
         </h2>
-        <button className="text-[var(--color-pink)] text-[10px] font-bold uppercase tracking-widest hover:underline">
+        <button 
+          onClick={() => onCategoryChange(null)}
+          className="text-[var(--color-pink)] text-[10px] font-bold uppercase tracking-widest hover:underline"
+        >
           Tout effacer
         </button>
       </div>
 
       {/* Active Filter Tags */}
       <div className="flex flex-wrap gap-2 mb-10">
-        {["Robe", "M"].map((tag) => (
-          <span key={tag} className="inline-flex items-center bg-slate-100 text-slate-700 text-[10px] font-bold px-3 py-1.5 rounded-full border border-slate-200">
-            {tag}
-            <button className="ml-2 hover:text-[var(--color-pink)]">×</button>
+        {selectedCategory && (
+          <span className="inline-flex items-center bg-slate-100 text-slate-700 text-[10px] font-bold px-3 py-1.5 rounded-full border border-slate-200">
+            {categories.find(c => c.id.toString() === selectedCategory.toString())?.name || 'Catégorie'}
+            <button onClick={() => onCategoryChange(null)} className="ml-2 hover:text-[var(--color-pink)]">×</button>
           </span>
-        ))}
+        )}
       </div>
 
       {/* Accordion Categories */}
@@ -33,10 +54,22 @@ export const ShopSidebar: React.FC = () => {
             <ChevronDown size={14} />
           </button>
           <ul className="space-y-4 text-slate-500 text-sm" style={{ fontFamily: "var(--font-body)" }}>
-            {["Robes & Combis", "Tops & T-shirts", "Vestes & Manteaux", "Pantalons"].map((cat) => (
-              <li key={cat} className="flex items-center gap-3 cursor-pointer hover:text-slate-900 transition-colors">
-                <div className="w-4 h-4 rounded border-2 border-slate-200" />
-                {cat}
+            <li 
+              key="all" 
+              onClick={() => onCategoryChange(null)}
+              className={`flex items-center gap-3 cursor-pointer transition-colors ${!selectedCategory ? 'text-slate-900 font-bold' : 'hover:text-slate-900'}`}
+            >
+              <div className={`w-4 h-4 rounded border-2 ${!selectedCategory ? 'border-[var(--color-pink)] bg-[var(--color-pink)]' : 'border-slate-200'}`} />
+              Toutes les catégories
+            </li>
+            {categories.map((cat) => (
+              <li 
+                key={cat.id} 
+                onClick={() => onCategoryChange(cat.id.toString())}
+                className={`flex items-center gap-3 cursor-pointer transition-colors ${selectedCategory === cat.id.toString() ? 'text-slate-900 font-bold' : 'hover:text-slate-900'}`}
+              >
+                <div className={`w-4 h-4 rounded border-2 ${selectedCategory === cat.id.toString() ? 'border-[var(--color-pink)] bg-[var(--color-pink)]' : 'border-slate-200'}`} />
+                {cat.name}
               </li>
             ))}
           </ul>
@@ -52,11 +85,7 @@ export const ShopSidebar: React.FC = () => {
             {["XS", "S", "M", "L", "XL"].map((size) => (
               <button
                 key={size}
-                className={`h-10 rounded-xl border flex items-center justify-center text-[10px] font-bold transition-all ${
-                  size === "M" 
-                    ? "border-[var(--color-pink)] text-[var(--color-pink)] bg-pink-50" 
-                    : "border-slate-100 text-slate-500 bg-slate-50 hover:border-slate-300"
-                }`}
+                className={`h-10 rounded-xl border flex items-center justify-center text-[10px] font-bold transition-all border-slate-100 text-slate-500 bg-slate-50 hover:border-slate-300`}
               >
                 {size}
               </button>
@@ -93,9 +122,7 @@ export const ShopSidebar: React.FC = () => {
             {["#000", "#D01374", "#E5E7EB", "#FEF08A", "#4C1D95"].map((color, idx) => (
               <button
                 key={idx}
-                className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${
-                  idx === 1 ? "border-[var(--color-pink)] p-0.5" : "border-transparent"
-                }`}
+                className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 border-transparent`}
               >
                 <div className="w-full h-full rounded-full" style={{ backgroundColor: color }} />
               </button>
@@ -122,3 +149,4 @@ export const ShopSidebar: React.FC = () => {
     </aside>
   );
 };
+

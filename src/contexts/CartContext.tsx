@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 
 export interface CartItem {
   id: number;
@@ -24,43 +25,19 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      const savedCart = localStorage.getItem('threadlux_cart');
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch {
+      return [];
+    }
+  });
 
-  // Mock initial data as per screenshot
+  // Sync to localStorage on every change
   useEffect(() => {
-    setCart([
-      {
-        id: 1,
-        name: "Archival Heavy Hoodie",
-        price: 145.00,
-        image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=300&auto=format&fit=crop",
-        quantity: 1,
-        size: "XL",
-        color: "Muted Lavender",
-        sku: "LUX-H-0042"
-      },
-      {
-        id: 2,
-        name: "Neon Pulse Runner",
-        price: 180.00,
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=300&auto=format&fit=crop",
-        quantity: 1,
-        size: "42",
-        color: "Electric Blue",
-        sku: "LUX-S-9012"
-      },
-      {
-        id: 3,
-        name: "Core Access Kit",
-        price: 45.00,
-        image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=300&auto=format&fit=crop",
-        quantity: 2,
-        size: "One Size",
-        color: "Stark White",
-        sku: "LUX-A-188"
-      }
-    ]);
-  }, []);
+    localStorage.setItem('threadlux_cart', JSON.stringify(cart));
+  }, [cart]);
 
   const addToCart = (item: CartItem) => {
     setCart(prev => {

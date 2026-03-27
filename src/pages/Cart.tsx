@@ -3,6 +3,7 @@ import { MainLayout } from "../components/layout/MainLayout";
 import { useCart } from "../contexts/CartContext";
 import { Minus, Plus, X, ArrowRight, ShieldCheck, RotateCcw } from "lucide-react";
 import { ProductCard } from "../components/shop/ProductCard";
+import { Link } from "@tanstack/react-router";
 
 const Cart: React.FC = () => {
   const { cart, removeFromCart, updateQuantity, subtotal, total } = useCart();
@@ -130,9 +131,11 @@ const Cart: React.FC = () => {
                 <span className="text-4xl font-black text-[var(--color-pink)] italic tracking-tighter">€{total.toFixed(2)}</span>
               </div>
 
-              <button className="w-full h-16 rounded-3xl signature-gradient text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-xl shadow-pink-100 neon-glow-btn hover:scale-[1.02] transition-transform">
-                Proceed to Checkout <ArrowRight size={16} />
-              </button>
+              <Link to="/checkout" className="w-full">
+                <button className="w-full h-16 rounded-3xl signature-gradient text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-xl shadow-pink-100 neon-glow-btn hover:scale-[1.02] transition-transform">
+                  Proceed to Checkout <ArrowRight size={16} />
+                </button>
+              </Link>
 
               <div className="mt-8 space-y-3">
                  <div className="flex items-center gap-3 text-[9px] font-bold text-slate-400">

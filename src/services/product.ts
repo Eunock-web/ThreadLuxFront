@@ -59,8 +59,12 @@ class ProductService {
     };
   }
 
-  async getProducts(): Promise<{ success: boolean; data: any[] }> {
-    const response = await fetch(`${API_BASE_URL}/products`, {
+  async getProducts(categoryId?: string | number): Promise<{ success: boolean; data: any[] }> {
+    const url = new URL(`${API_BASE_URL}/products`);
+    if (categoryId) {
+      url.searchParams.append('category_id', categoryId.toString());
+    }
+    const response = await fetch(url.toString(), {
       method: 'GET',
       headers: this.getHeaders(),
     });

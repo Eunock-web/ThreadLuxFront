@@ -1,18 +1,14 @@
 import React from "react";
-
 import { useQuery } from "@tanstack/react-query";
+import { productService } from "../../services/product";
 
 export const CategoryGrid: React.FC = () => {
-  const { data: categoriesData, isLoading } = useQuery({
+  const { data: categoriesResponse, isLoading } = useQuery({
     queryKey: ['categories'],
-    queryFn: async () => {
-      const response = await fetch('http://localhost:8000/api/categories');
-      const data = await response.json();
-      return data.data || data;
-    }
+    queryFn: () => productService.getCategories()
   });
 
-  const categories = categoriesData || [];
+  const categories = categoriesResponse?.data || [];
   
   const layoutClasses = [
     { cols: "col-span-1", rows: "row-span-2" },

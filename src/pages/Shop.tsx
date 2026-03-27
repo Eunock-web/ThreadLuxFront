@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { MainLayout } from "../components/layout/MainLayout";
 import { ShopSidebar } from "../components/shop/ShopSidebar";
 import { ProductCard } from "../components/shop/ProductCard";
@@ -9,9 +9,11 @@ import { useQuery } from "@tanstack/react-query";
 import { productService } from "../services/product";
 
 const Home: React.FC = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
   const { data: productsData, isLoading, error } = useQuery({
-    queryKey: ['products'],
-    queryFn: () => productService.getProducts(),
+    queryKey: ['products', selectedCategory],
+    queryFn: () => productService.getProducts(selectedCategory || undefined),
   });
 
   const products = productsData?.data || [];
@@ -55,7 +57,7 @@ const Home: React.FC = () => {
 
         <div className="flex gap-16">
           {/* Sidebar */}
-          <ShopSidebar />
+          <ShopSidebar selectedCategory={selectedCategory} onCategoryChange={setSelectedCategory} />
 
           {/* Product Grid */}
           <div className="flex-1">

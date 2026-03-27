@@ -7,39 +7,19 @@ import { FlashSale } from "../components/new-arrivals/FlashSale";
 import { Testimonials } from "../components/new-arrivals/Testimonials";
 import { ProductCard } from "../components/shop/ProductCard";
 import { Button } from "../components/ui/Button";
-
-const trendingProducts = [
-  {
-    image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=1000&auto=format&fit=crop",
-    category: "ROBE EN SOIE",
-    title: "Linen Essentials",
-    price: "159.00€",
-    colors: ["#D01374"],
-  },
-  {
-    image: "https://images.unsplash.com/photo-1591369822096-ffd140ec948f?q=80&w=1000&auto=format&fit=crop",
-    category: "VESTE SATIN",
-    title: "Eco Green Tee",
-    price: "45.00€",
-    colors: ["#4C1D95"],
-  },
-  {
-    image: "https://images.unsplash.com/photo-1584273204192-35327ec29505?q=80&w=1000&auto=format&fit=crop",
-    category: "TOP ORGANZA",
-    title: "Summer Gaiter",
-    price: "120.00€",
-    colors: ["#B45309"],
-  },
-  {
-    image: "https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=1000&auto=format&fit=crop",
-    category: "JEAN LARGE",
-    title: "Clay Trousers",
-    price: "95.00€",
-    colors: ["#3B82F6"],
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { productService } from "../services/product";
 
 const NewArrivals: React.FC = () => {
+  const { data: productsData, isLoading } = useQuery({
+    queryKey: ['products'],
+    queryFn: () => productService.getProducts(),
+  });
+
+  const products = productsData?.data || [];
+  const trendingProducts = products.slice(0, 4);
+  const bestsellers = products.slice(4, 8); // Just taking the next 4 for demo
+
   return (
     <MainLayout>
       <Hero />
@@ -67,11 +47,27 @@ const NewArrivals: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {trendingProducts.map((product, index) => (
-              <ProductCard key={index} {...product} />
-            ))}
-          </div>
+          
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="w-10 h-10 border-4 border-slate-200 border-t-[var(--color-pink)] rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {trendingProducts.map((product: any) => (
+                <ProductCard 
+                  key={product.id}
+                  id={product.id}
+                  variantId={product.variants?.[0]?.id}
+                  title={product.name}
+                  category={product.category?.name || "ARCHIVE"}
+                  image={product.images?.[0]?.url_image || "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=1000&auto=format&fit=crop"}
+                  price={`${product.prix}€`}
+                  colors={[]}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -86,27 +82,36 @@ const NewArrivals: React.FC = () => {
           >
             Nos Bestsellers
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {trendingProducts.map((product, index) => (
-              <div key={index} className="group cursor-pointer">
-                 <div className="relative aspect-[3/4] rounded-[40px] bg-slate-100 overflow-hidden mb-6">
-                    <div className="absolute top-4 left-4 bg-white px-3 py-1 rounded-full shadow-sm z-10 flex items-center gap-1">
-                      <span className="text-[8px] font-black tracking-widest uppercase">Bestseller</span>
-                    </div>
-                    <img 
-                      src={product.image} 
-                      alt={product.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/5">
-                      <Button variant="primary" size="sm" className="rounded-full shadow-xl">Quick View</Button>
-                    </div>
-                 </div>
-                 <h3 className="font-bold text-slate-900 mb-1">{product.title}</h3>
-                 <p className="text-[var(--color-pink)] font-black">{product.price}</p>
-              </div>
-            ))}
-          </div>
+          
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="w-10 h-10 border-4 border-slate-200 border-t-[var(--color-pink)] rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {bestsellers.length > 0 ? bestsellers.map((product: any) => (
+                <div key={product.id} className="group cursor-pointer">
+                   <div className="relative aspect-[3/4] rounded-[40px] bg-slate-100 overflow-hidden mb-6">
+                      <div className="absolute top-4 left-4 bg-white px-3 py-1 rounded-full shadow-sm z-10 flex items-center gap-1">
+                        <span className="text-[8px] font-black tracking-widest uppercase">Bestseller</span>
+                      </div>
+                      <img 
+                        src={product.images?.[0]?.url_image || "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1"} 
+                        alt={product.name} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/5">
+                        <Button variant="primary" size="sm" className="rounded-full shadow-xl">Quick View</Button>
+                      </div>
+                   </div>
+                   <h3 className="font-bold text-slate-900 mb-1">{product.name}</h3>
+                   <p className="text-[var(--color-pink)] font-black">{product.prix}€</p>
+                </div>
+              )) : (
+                <p className="col-span-4 text-center text-slate-500">Aucun produit trouvé.</p>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
