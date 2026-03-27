@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { ArrowRight, AlertTriangle } from "lucide-react";
 
 import { AuthLayout } from "../../components/auth/AuthLayout";
 import { Button } from "../../components/ui/Button";
@@ -8,30 +9,37 @@ import { PasswordInput } from "../../components/ui/Input";
 import { Divider } from "../../components/ui/Divider";
 import { SocialButton } from "../../components/ui/SocialButton";
 import { Checkbox } from "../../components/ui/Checkbox";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface RegisterFormState {
-  fullName: string;
-  email: string;
+  firstname: string;
+  lastname: string;
+  email : string;
   password: string;
-  confirmPassword: string;
+  password_confirmation: string;
   agreeTOS: boolean;
   subscribeNewsletter: boolean;
 }
 
 interface FormErrors {
-  fullName?: string;
+  firstname?: string;
+  lastname?: string;
   email?: string;
   password?: string;
-  confirmPassword?: string;
+  password_confirmation?: string;
   agreeTOS?: string;
+  api?: string;
 }
 
 const Register: React.FC = () => {
+  const { register } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState<RegisterFormState>({
-    fullName: "",
+    firstname: "",
+    lastname: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    password_confirmation: "",
     agreeTOS: false,
     subscribeNewsletter: false,
   });
@@ -41,8 +49,12 @@ const Register: React.FC = () => {
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
     
-    if (!form.fullName.trim()) {
-      newErrors.fullName = "Full name is required.";
+    if (!form.firstname.trim()) {
+      newErrors.firstname = "First name is required.";
+    }
+    
+    if (!form.lastname.trim()) {
+      newErrors.lastname = "Last name is required.";
     }
     
     if (!form.email) {
@@ -57,8 +69,8 @@ const Register: React.FC = () => {
       newErrors.password = "Password must be at least 8 characters.";
     }
     
-    if (form.confirmPassword !== form.password) {
-      newErrors.confirmPassword = "Passwords do not match.";
+    if (form.password_confirmation !== form.password) {
+      newErrors.password_confirmation = "Passwords do not match.";
     }
     
     if (!form.agreeTOS) {
@@ -78,7 +90,7 @@ const Register: React.FC = () => {
     
     // Clear error
     if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
+      setErrors((prev) => ({ ...prev, [name]: undefined, api: undefined }));
     }
   };
 
@@ -87,10 +99,23 @@ const Register: React.FC = () => {
     if (!validate()) return;
     
     setLoading(true);
+    setErrors((prev) => ({ ...prev, api: undefined }));
+
     try {
-      // TODO: Implement registration logic
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Registration submitted", form);
+      const result = await register(form);
+      if (result.success) {
+        navigate({ to: "/" });
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          api: result.message || "Registration failed. Please check your details.",
+        }));
+      }
+    } catch (error) {
+      setErrors((prev) => ({
+        ...prev,
+        api: "Failed to connect to the registration server. Please try again later.",
+      }));
     } finally {
       setLoading(false);
     }
@@ -127,16 +152,35 @@ const Register: React.FC = () => {
 
           {/* ── Registration Form ───────────────────────── */}
           <form onSubmit={handleSubmit} noValidate className="space-y-6 mt-8">
-            {/* Full Name */}
-            <Input
-              label="FULL NAME"
-              name="fullName"
-              placeholder="Alex Rivera"
-              value={form.fullName}
-              onChange={handleChange}
-              error={errors.fullName}
-              className="bg-slate-100/50"
-            />
+            {errors.api && (
+              <div className="p-4 rounded-[24px] bg-red-500/10 border border-red-500/20 flex items-center gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                <AlertTriangle className="text-red-500 shrink-0" size={20} />
+                <p className="text-xs font-semibold text-red-500 leading-snug">
+                  {errors.api}
+                </p>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="FIRST NAME"
+                name="firstname"
+                placeholder="Alex"
+                value={form.firstname}
+                onChange={handleChange}
+                error={errors.firstname}
+                className="bg-slate-100/50"
+              />
+              <Input
+                label="LAST NAME"
+                name="lastname"
+                placeholder="Rivera"
+                value={form.lastname}
+                onChange={handleChange}
+                error={errors.lastname}
+                className="bg-slate-100/50"
+              />
+            </div>
 
             {/* Email Address */}
             <Input
@@ -166,11 +210,11 @@ const Register: React.FC = () => {
             {/* Confirm Password */}
             <PasswordInput
               label="CONFIRM PASSWORD"
-              name="confirmPassword"
+              name="password_confirmation"
               placeholder="••••••••"
-              value={form.confirmPassword}
+              value={form.password_confirmation}
               onChange={handleChange}
-              error={errors.confirmPassword}
+              error={errors.password_confirmation}
               autoComplete="new-password"
               className="bg-slate-100/50"
             />
@@ -223,12 +267,12 @@ const Register: React.FC = () => {
             style={{ fontFamily: "var(--font-body)" }}
           >
             Already a member?{" "}
-            <a
-              href="/login"
+            <Link
+              to="/login"
               className="font-bold text-[var(--color-pink)] hover:text-[var(--color-pink-dim)] transition-colors"
             >
               Login here
-            </a>
+            </Link>
           </p>
           
           {/* Gradient bottom border active indicator */}

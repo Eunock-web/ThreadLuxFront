@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { ArrowRight, AlertTriangle } from "lucide-react";
 
 import { AuthLayout } from "../../components/auth/AuthLayout";
 import { Button } from "../../components/ui/Button";
@@ -7,6 +8,7 @@ import { Input } from "../../components/ui/Input";
 import { PasswordInput } from "../../components/ui/Input";
 import { Divider } from "../../components/ui/Divider";
 import { SocialButton } from "../../components/ui/SocialButton";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface LoginFormState {
   email: string;
@@ -16,9 +18,12 @@ interface LoginFormState {
 interface FormErrors {
   email?: string;
   password?: string;
+  api?: string;
 }
 
 const Login: React.FC = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState<LoginFormState>({ email: "", password: "" });
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
@@ -44,7 +49,7 @@ const Login: React.FC = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
     // Clear field error on change
     if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
+      setErrors((prev) => ({ ...prev, [name]: undefined, api: undefined }));
     }
   };
 
@@ -52,10 +57,23 @@ const Login: React.FC = () => {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
+    setErrors((prev) => ({ ...prev, api: undefined }));
+
     try {
-      // TODO: Replace with real API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Login submitted", form);
+      const result = await login(form);
+      if (result.success) {
+        navigate({ to: "/" });
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          api: result.message || "Invalid credentials. Please try again.",
+        }));
+      }
+    } catch (error) {
+      setErrors((prev) => ({
+        ...prev,
+        api: "Connection to security terminal failed. Please check your network.",
+      }));
     } finally {
       setLoading(false);
     }
@@ -85,6 +103,14 @@ const Login: React.FC = () => {
 
       {/* ── Login form ────────────────────────────────── */}
       <form onSubmit={handleSubmit} noValidate className="space-y-6">
+        {errors.api && (
+          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+            <AlertTriangle className="text-red-500 shrink-0" size={18} />
+            <p className="text-xs font-semibold text-red-500 leading-snug">
+              {errors.api}
+            </p>
+          </div>
+        )}
         {/* Email */}
         <Input
           label="User Terminal"
@@ -153,12 +179,12 @@ const Login: React.FC = () => {
         style={{ fontFamily: "var(--font-body)" }}
       >
         New to the network?{" "}
-        <a
-          href="/register"
+        <Link
+          to="/register"
           className="font-bold text-[var(--color-pink)] hover:text-[var(--color-pink-dim)] transition-colors"
         >
           Join ThreadLux
-        </a>
+        </Link>
       </p>
     </AuthLayout>
   );
