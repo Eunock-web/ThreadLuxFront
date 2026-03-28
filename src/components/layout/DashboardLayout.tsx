@@ -6,7 +6,6 @@ import {
   Layers, 
   Users, 
   BarChart3, 
-  Settings, 
   Plus, 
   HelpCircle, 
   LogOut,
@@ -24,10 +23,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
 
   const menuItems = [
     { icon: <LayoutDashboard size={20} />, label: "Overview", href: "/dashboard" },
+    { icon: <BarChart3 size={20} />, label: "Payouts", href: "/dashboard/payouts" },
     { icon: <Package size={20} />, label: "Products", href: "/dashboard/products", active: true },
     { icon: <Layers size={20} />, label: "Collections", href: "/dashboard/collections" },
     { icon: <Users size={20} />, label: "Customers", href: "/dashboard/customers" },
-    { icon: <BarChart3 size={20} />, label: "Marketing", href: "/dashboard/marketing" },
   ];
 
   return (
@@ -45,25 +44,28 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         </div>
 
         <nav className="flex-1 space-y-2">
-          {menuItems.map((item) => (
-            <Link
-              key={item.label}
-              to={item.href}
-              className={`flex items-center gap-4 px-4 py-3 rounded-2xl transition-all font-bold text-xs tracking-tight ${
-                item.active 
-                ? "bg-[var(--color-pink)]/5 text-[var(--color-pink)] shadow-sm border border-[var(--color-pink)]/10" 
-                : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-              }`}
-            >
-              <span className={item.active ? "text-[var(--color-pink)]" : "text-slate-400 group-hover:text-slate-900"}>
-                {item.icon}
-              </span>
-              {item.label}
-              {item.active && (
-                <div className="ml-auto w-1 h-4 bg-[var(--color-pink)] rounded-full" />
-              )}
-            </Link>
-          ))}
+          {menuItems.map((item) => {
+            const isActive = location.pathname === item.href;
+            return (
+              <Link
+                key={item.label}
+                to={item.href}
+                className={`flex items-center gap-4 px-4 py-3 rounded-2xl transition-all font-bold text-xs tracking-tight ${
+                  isActive 
+                  ? "bg-[var(--color-pink)]/5 text-[var(--color-pink)] shadow-sm border border-[var(--color-pink)]/10" 
+                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                }`}
+              >
+                <span className={isActive ? "text-[var(--color-pink)]" : "text-slate-400 group-hover:text-slate-900"}>
+                  {item.icon}
+                </span>
+                {item.label}
+                {isActive && (
+                  <div className="ml-auto w-1 h-4 bg-[var(--color-pink)] rounded-full" />
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="mt-auto space-y-6">

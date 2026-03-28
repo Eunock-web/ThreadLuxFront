@@ -19,6 +19,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
+import { Route as DashboardPayoutsRouteImport } from './routes/dashboard.payouts'
 import { Route as DashboardProductsAddRouteImport } from './routes/dashboard.products.add'
 
 const ShopRoute = ShopRouteImport.update({
@@ -71,6 +72,11 @@ const ProductIdRoute = ProductIdRouteImport.update({
   path: '/product/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardPayoutsRoute = DashboardPayoutsRouteImport.update({
+  id: '/dashboard/payouts',
+  path: '/dashboard/payouts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardProductsAddRoute = DashboardProductsAddRouteImport.update({
   id: '/dashboard/products/add',
   path: '/dashboard/products/add',
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/new': typeof NewRoute
   '/register': typeof RegisterRoute
   '/shop': typeof ShopRoute
+  '/dashboard/payouts': typeof DashboardPayoutsRoute
   '/product/$id': typeof ProductIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/products/add': typeof DashboardProductsAddRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/new': typeof NewRoute
   '/register': typeof RegisterRoute
   '/shop': typeof ShopRoute
+  '/dashboard/payouts': typeof DashboardPayoutsRoute
   '/product/$id': typeof ProductIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/products/add': typeof DashboardProductsAddRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/new': typeof NewRoute
   '/register': typeof RegisterRoute
   '/shop': typeof ShopRoute
+  '/dashboard/payouts': typeof DashboardPayoutsRoute
   '/product/$id': typeof ProductIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/products/add': typeof DashboardProductsAddRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/new'
     | '/register'
     | '/shop'
+    | '/dashboard/payouts'
     | '/product/$id'
     | '/dashboard/'
     | '/dashboard/products/add'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/new'
     | '/register'
     | '/shop'
+    | '/dashboard/payouts'
     | '/product/$id'
     | '/dashboard'
     | '/dashboard/products/add'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/new'
     | '/register'
     | '/shop'
+    | '/dashboard/payouts'
     | '/product/$id'
     | '/dashboard/'
     | '/dashboard/products/add'
@@ -168,6 +180,7 @@ export interface RootRouteChildren {
   NewRoute: typeof NewRoute
   RegisterRoute: typeof RegisterRoute
   ShopRoute: typeof ShopRoute
+  DashboardPayoutsRoute: typeof DashboardPayoutsRoute
   ProductIdRoute: typeof ProductIdRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardProductsAddRoute: typeof DashboardProductsAddRoute
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/payouts': {
+      id: '/dashboard/payouts'
+      path: '/dashboard/payouts'
+      fullPath: '/dashboard/payouts'
+      preLoaderRoute: typeof DashboardPayoutsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/products/add': {
       id: '/dashboard/products/add'
       path: '/dashboard/products/add'
@@ -264,6 +284,7 @@ const rootRouteChildren: RootRouteChildren = {
   NewRoute: NewRoute,
   RegisterRoute: RegisterRoute,
   ShopRoute: ShopRoute,
+  DashboardPayoutsRoute: DashboardPayoutsRoute,
   ProductIdRoute: ProductIdRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardProductsAddRoute: DashboardProductsAddRoute,

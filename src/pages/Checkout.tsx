@@ -97,18 +97,19 @@ const Checkout: React.FC = () => {
         }
       },
       onComplete: (data: any) => {
-        // FedaPay renvoie { reason: string, transaction: { id, status, ... } }
-        // data.reason === 'dialog_dismissed' si l'user ferme la modale
         const transaction = data.transaction ?? data;
         const status      = transaction?.status;
 
-        console.log('[FedaPay] onComplete', JSON.stringify(data));
+        console.log('[FedaPay] onComplete raw data:', data);
 
-        if (status === "approved" || data.reason === "checkout_completed") {
+        // In sandbox or some mobile money cases, status can be 'pending' or 'initiated' 
+        // but the payment flow is considered "done" by the widget.
+        // We verify on backend to get the formal status.
+        if (status === "approved" || status === "pending" || status === "initiated" || data.reason === "checkout_completed") {
            verifyOnBackend(transaction.id ?? data.id);
         } else {
            setLoading(false);
-           alert(`Paiement non approuvé (statut: ${status ?? data.reason ?? 'inconnu'}).`);
+           alert(`Fin de transaction (statut: ${status ?? data.reason ?? 'inconnu'}).`);
         }
       },
       onClose: () => setLoading(false)
