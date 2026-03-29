@@ -45,9 +45,13 @@ const Checkout: React.FC = () => {
   // 2. VÉRIFICATION CÔTÉ LARAVEL
   const verifyOnBackend = async (transactionId: number) => {
     try {
+      const token = localStorage.getItem('auth_token');
       const response = await fetch("http://localhost:8000/api/payment/verify", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ 
             transaction_id: transactionId,
             customer_email: form.email,

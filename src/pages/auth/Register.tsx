@@ -104,7 +104,7 @@ const Register: React.FC = () => {
     try {
       const result = await register(form);
       if (result.success) {
-        navigate({ to: "/" });
+        navigate({ to: "/login" });
       } else {
         setErrors((prev) => ({
           ...prev,
