@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/dashboard')({
-  beforeLoad: ({ context, location }: any) => {
+  beforeLoad: ({ context: _context, location }: any) => {
     // Note: TanStack Router context can be used, but since useAuth is a hook, 
     // we might need to check localStorage or state if available via context.
     // For simplicity, we check the user role from localStorage if it's there.

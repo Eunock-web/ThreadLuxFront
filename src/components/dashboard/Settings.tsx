@@ -6,7 +6,7 @@ interface SettingsProps {
   onChange: (field: string, value: any) => void;
 }
 
-export const SettingsSection: React.FC<SettingsProps> = ({ data, onChange }) => {
+export const SettingsSection: React.FC<SettingsProps> = ({ data, onChange: _onChange }) => {
   return (
     <div className="bg-white p-10 rounded-[40px] shadow-sm border border-slate-100 flex flex-col gap-8 mb-8">
       <div className="flex items-center gap-3">

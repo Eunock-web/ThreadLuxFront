@@ -1,41 +1,45 @@
-@import "tailwindcss";
-
-/* ── Google Fonts ─────────────────────────────────────── */
 @import url("https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap");
+@import "tailwindcss";
 
 /* ── Design Tokens ───────────────────────────────────── */
 :root {
   /* Brand */
-  --color-pink:        #FA53A4;
-  --color-pink-dim:    #B00D6A;
-  --color-magenta:     #EC4899;
+  --color-pink: #fa53a4;
+  --color-pink-dim: #b00d6a;
+  --color-magenta: #ec4899;
   --color-magenta-glow: rgba(236, 72, 153, 0.6);
 
   /* Surfaces */
-  --color-surface:     #F9F5FA;
-  --color-surface-high:#E4E1E7;
-  --color-surface-highest:#DEDCE1;
-  --color-surface-dim: #D6D3D9;
+  --color-surface: #f9f5fa;
+  --color-surface-high: #e4e1e7;
+  --color-surface-highest: #dedce1;
+  --color-surface-dim: #d6d3d9;
 
   /* Text */
-  --color-on-surface:  #2F2E31;
-  --color-on-surface-variant: #5C5B5E;
-  --color-outline:     #77767A;
-  --color-outline-variant: #AEACB0;
+  --color-on-surface: #2f2e31;
+  --color-on-surface-variant: #5c5b5e;
+  --color-outline: #77767a;
+  --color-outline-variant: #aeacb0;
 
   /* Input */
-  --color-input-bg:    #DADDBA00;
+  --color-input-bg: #daddba00;
 
   /* Fonts */
   --font-headline: "Epilogue", sans-serif;
-  --font-body:     "Inter", sans-serif;
-  --font-mono:     "JetBrains Mono", monospace;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
 /* ── Base ─────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -47,7 +51,7 @@ html, body, #root {
 
 /* ── Signature Gradient ──────────────────────────────── */
 .signature-gradient {
-  background: linear-gradient(135deg, #EC4899, #8B5CF6);
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
 }
 
 /* ── Neon Glow Button ─────────────────────────────────── */
@@ -62,6 +66,13 @@ html, body, #root {
 }
 
 /* ── Custom Scrollbar ─────────────────────────────────── */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--color-outline-variant); border-radius: 99px; }
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 99px;
+}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Package, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 export const CurrentOrder: React.FC = () => {
   const steps = [

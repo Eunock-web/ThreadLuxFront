@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, Upload, Image as ImageIcon } from "lucide-react";
+import { Upload, Image as ImageIcon, X } from "lucide-react";
 
 interface MediaUploadProps {
   images: any[];

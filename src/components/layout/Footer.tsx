@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "@tanstack/react-router";
 import { Share2, Camera, MessageCircle } from "lucide-react";
-import { Button } from "../ui/Button";
 
 export const Footer: React.FC = () => {
   return (

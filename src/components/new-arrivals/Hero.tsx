@@ -1,5 +1,4 @@
 import React from "react";
-import { ArrowRight } from "lucide-react";
 import { Button } from "../ui/Button";
 
 export const Hero: React.FC = () => {

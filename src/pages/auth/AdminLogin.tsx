@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { ArrowRight, AlertTriangle, ShieldCheck } from "lucide-react";
 
 import { AuthLayout } from "../../components/auth/AuthLayout";

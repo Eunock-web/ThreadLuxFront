@@ -6,7 +6,7 @@ import { favorisService } from "../services/favoris";
 import { useAuth } from "../contexts/AuthContext";
 import { useCart } from "../contexts/CartContext";
 import { Route } from "../routes/product.$id";
-import { Heart, Star, Truck, RotateCcw } from "lucide-react";
+import { Heart, Star, Truck, RotateCcw, ShieldCheck } from "lucide-react";
 
 const ProductDetails: React.FC = () => {
   const { id } = Route.useParams();
