@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../api/config';
 
 export interface ProductVariant {
   taille: string;
@@ -32,7 +33,6 @@ export interface ProductResponse {
   errors?: Record<string, string[]>;
 }
 
-const API_BASE_URL = 'http://localhost:8000/api';
 
 class ProductService {
   private getHeaders() {

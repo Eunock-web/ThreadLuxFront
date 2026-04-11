@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { ShieldCheck, Truck, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { useNavigate } from "@tanstack/react-router";
+import { API_BASE_URL } from "../api/config";
 
 declare global {
   interface Window {
@@ -55,7 +56,7 @@ const Checkout: React.FC = () => {
   const verifyOnBackend = async (transactionId: number) => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch("http://localhost:8000/api/payment/verify", {
+      const response = await fetch(`${API_BASE_URL}/payment/verify`, {
         method: "POST",
         headers: { 
             "Content-Type": "application/json",
