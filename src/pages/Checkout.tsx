@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { MainLayout } from "../components/layout/MainLayout";
 import { useCart } from "../contexts/CartContext";
+import { useAuth } from "../contexts/AuthContext";
 import { ShieldCheck, Truck, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "../components/ui/Button";
+import { useNavigate } from "@tanstack/react-router";
 
 declare global {
   interface Window {
@@ -11,6 +13,8 @@ declare global {
 }
 
 const Checkout: React.FC = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const { cart, subtotal, total, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -26,8 +30,13 @@ const Checkout: React.FC = () => {
     phone: "",
   });
 
-  // 1. CHARGEMENT DU SDK FEDAPAY
+  // 1. CHARGEMENT DU SDK FEDAPAY ET VERIFICATION ROLE
   useEffect(() => {
+    if (user && (user.role === 'vendeur' || user.role === 'admin')) {
+        navigate({ to: '/dashboard' });
+        return;
+    }
+
     const script = document.createElement("script");
     script.src = "https://cdn.fedapay.com/checkout.js?v=1.1.7";
     script.async = true;

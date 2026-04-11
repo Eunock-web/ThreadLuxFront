@@ -62,12 +62,14 @@ export const Header: React.FC = () => {
           <button className="hover:text-[var(--color-pink)] transition-colors">
             <Heart size={20} />
           </button>
-          <Link to="/cart" className="hover:text-[var(--color-pink)] transition-colors relative">
-            <ShoppingBag size={20} />
-            <span className="absolute -top-1.5 -right-1.5 bg-[var(--color-pink)] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-              {cart.length}
-            </span>
-          </Link>
+          {(!user || user.role === 'client') && (
+            <Link to="/cart" className="hover:text-[var(--color-pink)] transition-colors relative">
+              <ShoppingBag size={20} />
+              <span className="absolute -top-1.5 -right-1.5 bg-[var(--color-pink)] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                {cart.length}
+              </span>
+            </Link>
+          )}
           
           {isAuthenticated ? (
             <div className="flex items-center gap-4">

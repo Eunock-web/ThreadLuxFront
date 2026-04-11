@@ -5,6 +5,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (credentials: any) => Promise<any>;
+  adminLogin: (credentials: any) => Promise<any>;
   register: (userData: any) => Promise<any>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
@@ -33,6 +34,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return response;
   };
 
+  const adminLogin = async (credentials: any) => {
+    const response = await authService.adminLogin(credentials);
+    if (response.success && response.user) {
+      setUser(response.user);
+    }
+    return response;
+  };
+
   const register = async (userData: any) => {
     const response = await authService.register(userData);
     if (response.success && response.user) {
@@ -50,6 +59,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     user,
     loading,
     login,
+    adminLogin,
     register,
     logout,
     isAuthenticated: !!user,

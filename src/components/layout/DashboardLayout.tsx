@@ -1,5 +1,4 @@
-import React from "react";
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { 
   LayoutDashboard, 
   Package, 
@@ -9,7 +8,8 @@ import {
   Plus, 
   HelpCircle, 
   LogOut,
-  Bell
+  Bell,
+  AlertOctagon
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -20,12 +20,19 @@ interface DashboardLayoutProps {
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate({ to: "/" });
+  };
 
   const menuItems = [
     { icon: <LayoutDashboard size={20} />, label: "Overview", href: "/dashboard" },
     { icon: <BarChart3 size={20} />, label: "Payouts", href: "/dashboard/payouts" },
     { icon: <Package size={20} />, label: "Products", href: "/dashboard/products", active: true },
     { icon: <Layers size={20} />, label: "Collections", href: "/dashboard/collections" },
+    { icon: <AlertOctagon size={20} />, label: "Litiges", href: "/dashboard/litiges" },
     { icon: <Users size={20} />, label: "Customers", href: "/dashboard/customers" },
   ];
 
@@ -80,7 +87,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
               Support
             </button>
             <button 
-              onClick={() => logout()}
+              onClick={handleLogout}
               className="flex items-center gap-4 px-4 py-2 w-full text-slate-400 hover:text-red-500 transition-colors font-bold text-xs"
             >
               <LogOut size={18} />

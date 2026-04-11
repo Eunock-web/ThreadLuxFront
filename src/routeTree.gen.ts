@@ -13,6 +13,7 @@ import { Route as ShopRouteImport } from './routes/shop'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as NewRouteImport } from './routes/new'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AccountRouteImport } from './routes/account'
@@ -20,6 +21,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as DashboardPayoutsRouteImport } from './routes/dashboard.payouts'
+import { Route as DashboardLitigesRouteImport } from './routes/dashboard.litiges'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as DashboardProductsAddRouteImport } from './routes/dashboard.products.add'
 
 const ShopRoute = ShopRouteImport.update({
@@ -40,6 +43,11 @@ const NewRoute = NewRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -63,9 +71,9 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const ProductIdRoute = ProductIdRouteImport.update({
   id: '/product/$id',
@@ -73,14 +81,24 @@ const ProductIdRoute = ProductIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardPayoutsRoute = DashboardPayoutsRouteImport.update({
-  id: '/dashboard/payouts',
-  path: '/dashboard/payouts',
+  id: '/payouts',
+  path: '/payouts',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardLitigesRoute = DashboardLitigesRouteImport.update({
+  id: '/litiges',
+  path: '/litiges',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardProductsAddRoute = DashboardProductsAddRouteImport.update({
-  id: '/dashboard/products/add',
-  path: '/dashboard/products/add',
-  getParentRoute: () => rootRouteImport,
+  id: '/products/add',
+  path: '/products/add',
+  getParentRoute: () => DashboardRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -88,10 +106,13 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/new': typeof NewRoute
   '/register': typeof RegisterRoute
   '/shop': typeof ShopRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/dashboard/litiges': typeof DashboardLitigesRoute
   '/dashboard/payouts': typeof DashboardPayoutsRoute
   '/product/$id': typeof ProductIdRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -106,6 +127,8 @@ export interface FileRoutesByTo {
   '/new': typeof NewRoute
   '/register': typeof RegisterRoute
   '/shop': typeof ShopRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/dashboard/litiges': typeof DashboardLitigesRoute
   '/dashboard/payouts': typeof DashboardPayoutsRoute
   '/product/$id': typeof ProductIdRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -117,10 +140,13 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/new': typeof NewRoute
   '/register': typeof RegisterRoute
   '/shop': typeof ShopRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/dashboard/litiges': typeof DashboardLitigesRoute
   '/dashboard/payouts': typeof DashboardPayoutsRoute
   '/product/$id': typeof ProductIdRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -133,10 +159,13 @@ export interface FileRouteTypes {
     | '/account'
     | '/cart'
     | '/checkout'
+    | '/dashboard'
     | '/login'
     | '/new'
     | '/register'
     | '/shop'
+    | '/admin/login'
+    | '/dashboard/litiges'
     | '/dashboard/payouts'
     | '/product/$id'
     | '/dashboard/'
@@ -151,6 +180,8 @@ export interface FileRouteTypes {
     | '/new'
     | '/register'
     | '/shop'
+    | '/admin/login'
+    | '/dashboard/litiges'
     | '/dashboard/payouts'
     | '/product/$id'
     | '/dashboard'
@@ -161,10 +192,13 @@ export interface FileRouteTypes {
     | '/account'
     | '/cart'
     | '/checkout'
+    | '/dashboard'
     | '/login'
     | '/new'
     | '/register'
     | '/shop'
+    | '/admin/login'
+    | '/dashboard/litiges'
     | '/dashboard/payouts'
     | '/product/$id'
     | '/dashboard/'
@@ -176,14 +210,13 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
   NewRoute: typeof NewRoute
   RegisterRoute: typeof RegisterRoute
   ShopRoute: typeof ShopRoute
-  DashboardPayoutsRoute: typeof DashboardPayoutsRoute
+  AdminLoginRoute: typeof AdminLoginRoute
   ProductIdRoute: typeof ProductIdRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
-  DashboardProductsAddRoute: typeof DashboardProductsAddRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -216,6 +249,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout': {
       id: '/checkout'
       path: '/checkout'
@@ -246,10 +286,10 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/': {
       id: '/dashboard/'
-      path: '/dashboard'
+      path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/product/$id': {
       id: '/product/$id'
@@ -260,34 +300,65 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/payouts': {
       id: '/dashboard/payouts'
-      path: '/dashboard/payouts'
+      path: '/payouts'
       fullPath: '/dashboard/payouts'
       preLoaderRoute: typeof DashboardPayoutsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/litiges': {
+      id: '/dashboard/litiges'
+      path: '/litiges'
+      fullPath: '/dashboard/litiges'
+      preLoaderRoute: typeof DashboardLitigesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/products/add': {
       id: '/dashboard/products/add'
-      path: '/dashboard/products/add'
+      path: '/products/add'
       fullPath: '/dashboard/products/add'
       preLoaderRoute: typeof DashboardProductsAddRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DashboardRoute
     }
   }
 }
+
+interface DashboardRouteChildren {
+  DashboardLitigesRoute: typeof DashboardLitigesRoute
+  DashboardPayoutsRoute: typeof DashboardPayoutsRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardProductsAddRoute: typeof DashboardProductsAddRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardLitigesRoute: DashboardLitigesRoute,
+  DashboardPayoutsRoute: DashboardPayoutsRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+  DashboardProductsAddRoute: DashboardProductsAddRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
   NewRoute: NewRoute,
   RegisterRoute: RegisterRoute,
   ShopRoute: ShopRoute,
-  DashboardPayoutsRoute: DashboardPayoutsRoute,
+  AdminLoginRoute: AdminLoginRoute,
   ProductIdRoute: ProductIdRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
-  DashboardProductsAddRoute: DashboardProductsAddRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

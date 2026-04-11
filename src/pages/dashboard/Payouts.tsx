@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { DashboardLayout } from "../../components/layout/DashboardLayout";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { escrowService } from "../../services/escrowService";
@@ -18,9 +19,15 @@ const Payouts: React.FC = () => {
 
   const releaseMutation = useMutation({
     mutationFn: (id: number) => escrowService.releaseFunds(id),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['pending-payouts'] });
+      if (data.success) {
+        alert(data.message || "Fonds débloqués avec succès !");
+      }
     },
+    onError: (error: any) => {
+      alert("Erreur lors du déblocage des fonds : " + error.message);
+    }
   });
 
   const handleRelease = async (id: number) => {
@@ -95,39 +102,55 @@ const Payouts: React.FC = () => {
                   ) : filteredPayouts.length === 0 ? (
                     <tr><td colSpan={5} className="py-20 text-center text-slate-400 font-bold italic">Aucun paiement en attente.</td></tr>
                   ) : (
-                    filteredPayouts.map((p: Payout) => (
-                      <tr key={p.id} className="group hover:bg-slate-50/50 transition-colors">
-                        <td className="py-6 px-4">
-                          <span className="text-[10px] font-black bg-slate-100 px-3 py-1 rounded-full text-slate-600 block text-center">
-                            {p.reference}
-                          </span>
-                        </td>
-                        <td className="py-6 px-4">
-                          <p className="text-xs font-black text-slate-900 leading-none mb-1">{p.acheteur?.firstname} {p.acheteur?.lastname}</p>
-                          <p className="text-[9px] font-bold text-slate-400">{p.acheteur?.email}</p>
-                        </td>
-                        <td className="py-6 px-4">
-                          <span className="text-sm font-black text-slate-900 italic tracking-tighter">
-                            {parseInt(p.amount).toLocaleString()} {p.currency}
-                          </span>
-                        </td>
-                        <td className="py-6 px-4">
-                          <span className="text-[10px] font-bold text-slate-400">
-                            {format(new Date(p.created_at), "dd MMM yyyy", { locale: fr })}
-                          </span>
-                        </td>
-                        <td className="py-6 px-4 text-center">
-                          <button 
-                            onClick={() => handleRelease(p.id)}
-                            disabled={releaseMutation.isPending}
-                            className="px-6 py-3 rounded-full bg-[var(--color-pink)] text-white text-[10px] font-black uppercase tracking-widest hover:shadow-lg hover:shadow-pink-200 transition-all flex items-center gap-2 mx-auto disabled:opacity-50"
-                          >
-                            {releaseMutation.isPending ? "..." : "Libérer"}
-                            <ArrowRight size={14} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
+                    filteredPayouts.map((p: Payout) => {
+                      const isThisLoading = releaseMutation.isPending && releaseMutation.variables === p.id;
+                      return (
+                        <tr key={p.id} className="group hover:bg-slate-50/50 transition-colors">
+                          <td className="py-6 px-4">
+                            <div className="flex flex-col items-center gap-2 text-center">
+                              <span className="text-[10px] font-black bg-slate-100 px-3 py-1 rounded-full text-slate-600 block">
+                                {p.reference}
+                              </span>
+                              {p.escrow_status === 'en_litige' && (
+                                <span className="text-[8px] font-black bg-red-500 text-white px-2 py-0.5 rounded-full uppercase tracking-widest">
+                                  En Litige
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-6 px-4">
+                            <p className="text-xs font-black text-slate-900 leading-none mb-1">{p.acheteur?.firstname} {p.acheteur?.lastname}</p>
+                            <p className="text-[9px] font-bold text-slate-400">{p.acheteur?.email}</p>
+                          </td>
+                          <td className="py-6 px-4">
+                            <span className="text-sm font-black text-slate-900 italic tracking-tighter">
+                              {parseInt(p.amount).toLocaleString()} {p.currency}
+                            </span>
+                          </td>
+                          <td className="py-6 px-4">
+                            <span className="text-[10px] font-bold text-slate-400">
+                              {format(new Date(p.created_at), "dd MMM yyyy", { locale: fr })}
+                            </span>
+                          </td>
+                          <td className="py-6 px-4 text-center">
+                            <button 
+                              onClick={() => handleRelease(p.id)}
+                              disabled={releaseMutation.isPending || p.escrow_status === 'en_litige'}
+                              className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 mx-auto disabled:opacity-50 ${
+                                p.escrow_status === 'en_litige' 
+                                ? "bg-slate-200 text-slate-400 cursor-not-allowed" 
+                                : isThisLoading
+                                ? "bg-slate-400 text-white"
+                                : "bg-[var(--color-pink)] text-white hover:shadow-lg hover:shadow-pink-200"
+                              }`}
+                            >
+                              {isThisLoading ? "Traitement..." : "Libérer"}
+                              <ArrowRight size={14} className={isThisLoading ? "animate-spin" : ""} />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
@@ -165,9 +188,12 @@ const Payouts: React.FC = () => {
               <p className="text-xs font-bold text-red-700/70 leading-relaxed mb-6">
                 Si un client signale un problème avec sa commande, ne libérez pas les fonds avant résolution.
               </p>
-              <button className="text-xs font-black text-red-500 uppercase tracking-widest hover:underline decoration-2 underline-offset-4">
+               <Link 
+                 to="/dashboard/litiges"
+                 className="text-xs font-black text-red-500 uppercase tracking-widest hover:underline decoration-2 underline-offset-4"
+               >
                 Voir les litiges
-              </button>
+              </Link>
            </div>
         </div>
       </div>

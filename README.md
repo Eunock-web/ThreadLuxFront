@@ -1,51 +1,151 @@
-# ThreadLux Frontend - Marketplace Mode & Luxe
+# ThreadLux — Frontend Marketplace Mode & Luxe
 
-ThreadLux est l'interface utilisateur moderne et réactive de la marketplace ThreadLux, conçue pour offrir une expérience d'achat fluide et sécurisée.
+ThreadLux est l'interface utilisateur moderne de la marketplace ThreadLux. Conçue avec React + TypeScript, elle offre une expérience d'achat fluide, sécurisée et réactive.
+
+---
 
 ## 🛠️ Stack Technique
 
-- **Framework** : [React](https://react.dev/) + [Vite](https://vitejs.dev/)
-- **Langage** : [TypeScript](https://www.typescriptlang.org/)
-- **Routage** : [TanStack Router](https://tanstack.com/router)
-- **Gestion d'État & Fetching** : [TanStack Query](https://tanstack.com/query)
-- **Icons** : [Lucide React](https://lucide.dev/)
-- **Paiement** : Intégration directe du widget [FedaPay](https://fedapay.com/)
+| Outil                                                     | Rôle                                        |
+| --------------------------------------------------------- | ------------------------------------------- |
+| [React](https://react.dev/) + [Vite](https://vitejs.dev/) | Framework UI + build system                 |
+| [TypeScript](https://www.typescriptlang.org/)             | Typage statique                             |
+| [TanStack Router](https://tanstack.com/router)            | Routage type-safe avec guards de navigation |
+| [TanStack Query](https://tanstack.com/query)              | Fetching & caching des données API          |
+| [Lucide React](https://lucide.dev/)                       | Icônes                                      |
+| [FedaPay Widget](https://fedapay.com/)                    | Paiement mobile money intégré               |
+
+---
 
 ## 🚀 Installation
 
-1. **Cloner le projet**
-2. **Installer les dépendances** :
-   ```bash
-   npm install
-   ```
-3. **Configurer les variables d'environnement** :
-   Créez un fichier `.env` (si nécessaire) pour pointer vers votre API Laravel :
-   ```ini
-   VITE_API_URL=http://localhost:8000/api
-   ```
-4. **Lancer le serveur de développement** :
-   ```bash
-   npm run dev
-   ```
+```bash
+# 1. Installer les dépendances
+npm install
 
-## 📂 Structure du Projet
+# 2. Configurer l'environnement
+# Créer un fichier .env à la racine du projet
+VITE_API_URL=http://localhost:8000/api
+VITE_FEDAPAY_PUBLIC_KEY=pk_sandbox_...
 
-- `/src/pages` : Contient les pages principales (Accueil, Login, Register, Checkout, Dashboard).
-- `/src/components` : Composants UI réutilisables.
-- `/src/routes` : Définition des routes de l'application via TanStack Router.
-- `/src/pages/Checkout.tsx` : Point d'intégration critique gérant le widget FedaPay et la validation backend.
+# 3. Démarrer le serveur de développement
+npm run dev
+```
+
+---
+
+## 📂 Architecture du Projet
+
+```
+src/
+├── contexts/
+│   ├── AuthContext.tsx      # Gestion globale de l'authentification (user, login, logout)
+│   └── CartContext.tsx      # Panier isolé par utilisateur via localStorage
+├── pages/
+│   ├── Home.tsx             # Page d'accueil — produits en vedette
+│   ├── Shop.tsx             # Catalogue avec filtres par catégorie
+│   ├── ProductDetails.tsx   # Fiche produit détaillée
+│   ├── Cart.tsx             # Panier d'achat (réservé aux utilisateurs connectés)
+│   ├── Checkout.tsx         # Paiement via widget FedaPay + vérification backend
+│   ├── BuyerDashboard.tsx   # Tableau de bord acheteur
+│   └── NewArrivals.tsx      # Nouveaux produits
+├── routes/
+│   ├── __root.tsx           # Layout racine (Navbar, Footer, Providers)
+│   ├── cart.tsx             # Route /cart — protégée par guard d'auth
+│   ├── checkout.tsx         # Route /checkout
+│   ├── dashboard.tsx        # Layout dashboard vendeur
+│   ├── dashboard.payouts.tsx# Gestion des payouts escrow (vendeurs)
+│   ├── dashboard.litiges.tsx# Gestion des litiges (vendeurs/admin)
+│   └── ...
+├── services/
+│   └── auth.ts             # Service d'appels API d'authentification
+└── components/             # Composants UI réutilisables (Navbar, ProductCard, etc.)
+```
+
+---
+
+## 🔐 Sécurité & Authentification
+
+### Protection des routes
+
+La route `/cart` est protégée par un `beforeLoad` TanStack Router :
+
+```typescript
+// src/routes/cart.tsx
+export const Route = createFileRoute("/cart")({
+  beforeLoad: ({ location }) => {
+    const token = localStorage.getItem("auth_token");
+    const user = localStorage.getItem("auth_user");
+    if (!token || !user) {
+      throw redirect({ to: "/login", search: { redirect: location.href } });
+    }
+  },
+  component: Cart,
+});
+```
+
+Les routes du dashboard vendeur (`/dashboard/*`) sont également protégées et réservées aux rôles `vendeur` / `admin`.
+
+### Isolation du panier par utilisateur
+
+Le panier est stocké dans le `localStorage` avec une clé dynamique basée sur l'ID utilisateur :
+
+```typescript
+// src/contexts/CartContext.tsx
+const cartKey = user ? `threadlux_cart_${user.id}` : "threadlux_cart_guest";
+```
+
+- **Utilisateur A** → clé `threadlux_cart_42`
+- **Utilisateur B** → clé `threadlux_cart_17`
+
+Lorsque l'utilisateur se connecte ou se déconnecte, le contexte recharge automatiquement le bon panier. Les paniers sont ainsi parfaitement isolés — **aucune fuite de données entre comptes**.
+
+---
 
 ## 💰 Intégration FedaPay
 
-L'application utilise le script SDK de FedaPay chargé globalement. Le processus de paiement se déroule comme suit :
+Le paiement se déroule entièrement dans `src/pages/Checkout.tsx` :
 
-1. Initialisation du widget avec `window.FedaPay.init()`.
-2. Passage de la `public_key` et des infos client.
-3. Capture de l'ID de transaction dans le callback `onComplete`.
-4. Appel immédiat vers le backend `/payment/verify` pour confirmer et sécuriser la vente.
+1. Le script SDK FedaPay est chargé globalement dans `index.html`.
+2. `window.FedaPay.init()` est appelé avec la `public_key` et les informations du client.
+3. Le callback `onComplete` reçoit l'ID de transaction FedaPay.
+4. Une requête `POST /payment/verify` est envoyée au backend avec l'ID transaction et les articles du panier.
+5. Le backend vérifie le paiement **directement avec la clé secrète FedaPay** (jamais la clé publique) avant de créer la commande et de bloquer les fonds en escrow.
 
-## 👤 Dashboard Vendeur (Payouts)
+> ⚠️ **Sécurité** : Le statut de paiement n'est jamais lu depuis le client. Seul le backend, avec accès à la clé secrète, confirme la transaction.
 
-Les vendeurs peuvent suivre leurs transactions en attente de déblocage via la page `/dashboard/payouts`.
+---
 
-- **Libérer fond** : Cette action déclenche l'appel API qui initie le virement réel vers le compte du vendeur.
+## 👤 Comptes & Rôles
+
+| Rôle      | Accès                                                                    |
+| --------- | ------------------------------------------------------------------------ |
+| `client`  | Navigation, panier, checkout, dashboard acheteur                         |
+| `vendeur` | Dashboard vendeur (payouts, litiges, produits) — **ne peut pas acheter** |
+| `admin`   | Toutes les routes admin (litiges, résolution)                            |
+
+Les vendeurs et admins sont **bloqués au niveau de la route `/checkout`** et rejetés par le backend sur `POST /payment/verify` — double protection.
+
+---
+
+## 🏪 Dashboard Vendeur
+
+Accessible via `/dashboard` après connexion via `/admin/login`.
+
+| Page            | URL                       | Description                          |
+| --------------- | ------------------------- | ------------------------------------ |
+| Payouts         | `/dashboard/payouts`      | Transactions en attente de déblocage |
+| Litiges         | `/dashboard/litiges`      | Disputes ouvertes par les acheteurs  |
+| Produits        | `/dashboard/products`     | Catalogue du vendeur                 |
+| Ajouter produit | `/dashboard/products/add` | Formulaire de création produit       |
+
+---
+
+## 🔨 Scripts disponibles
+
+```bash
+npm run dev      # Démarrer le serveur de développement (Vite)
+npm run build    # Build production
+npm run preview  # Prévisualiser le build
+npm run lint     # Linter ESLint
+```

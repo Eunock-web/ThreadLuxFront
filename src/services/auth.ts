@@ -68,6 +68,19 @@ class AuthService {
     return result;
   }
 
+  async adminLogin(credentials: any): Promise<AuthResponse> {
+    const response = await fetch(`${API_BASE_URL}/admin/login`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(credentials),
+    });
+    const result = await this.handleResponse(response);
+    if (result.success && result.token) {
+      localStorage.setItem('auth_token', result.token);
+    }
+    return result;
+  }
+
   async register(userData: any): Promise<AuthResponse> {
     const response = await fetch(`${API_BASE_URL}/register`, {
       method: 'POST',

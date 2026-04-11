@@ -34,7 +34,7 @@ export const Hero: React.FC = () => {
           <div className="relative">
             <div className="relative aspect-[4/5] rounded-[60px] overflow-hidden shadow-2xl transform lg:rotate-2 hover:rotate-0 transition-transform duration-700">
               <img 
-                src="/home/light/.gemini/antigravity/brain/dddc7d2b-a470-4d43-b4fd-1911c6fec587/hero_model_white_blazer_1774537078783.png" 
+                src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1" 
                 alt="New Collection Model" 
                 className="w-full h-full object-cover scale-110 hover:scale-100 transition-transform duration-1000"
               />

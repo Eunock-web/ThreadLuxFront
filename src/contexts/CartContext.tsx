@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import type { ReactNode } from 'react';
+import { useAuth } from './AuthContext';
 
 export interface CartItem {
   id: number;
@@ -25,19 +26,32 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [cart, setCart] = useState<CartItem[]>(() => {
+  const { user, loading: authLoading } = useAuth();
+  
+  // Storage key derived from user ID
+  const cartKey = useMemo(() => {
+    return user ? `threadlux_cart_${user.id}` : 'threadlux_cart_guest';
+  }, [user]);
+
+  const [cart, setCart] = useState<CartItem[]>([]);
+
+  // Load cart whenever the key changes (login/logout/init)
+  useEffect(() => {
+    if (authLoading) return;
+
     try {
-      const savedCart = localStorage.getItem('threadlux_cart');
-      return savedCart ? JSON.parse(savedCart) : [];
+      const savedCart = localStorage.getItem(cartKey);
+      setCart(savedCart ? JSON.parse(savedCart) : []);
     } catch {
-      return [];
+      setCart([]);
     }
-  });
+  }, [cartKey, authLoading]);
 
   // Sync to localStorage on every change
   useEffect(() => {
-    localStorage.setItem('threadlux_cart', JSON.stringify(cart));
-  }, [cart]);
+    if (authLoading) return;
+    localStorage.setItem(cartKey, JSON.stringify(cart));
+  }, [cart, cartKey, authLoading]);
 
   const addToCart = (item: CartItem) => {
     setCart(prev => {
@@ -61,7 +75,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const clearCart = () => setCart([]);
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const total = subtotal + 31.45; // Fixed tax for mock
+  const total = subtotal > 0 ? subtotal + 31.45 : 0; // Fixed tax for mock, 0 if empty
 
   return (
     <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart, subtotal, total }}>

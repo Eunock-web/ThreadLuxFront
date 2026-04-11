@@ -51,6 +51,47 @@ class EscrowService {
     const data = await response.json();
     return { success: response.ok, message: data.message };
   }
+
+  async getLitiges(): Promise<{ success: boolean; data: any[] }> {
+    const response = await fetch(`${API_BASE_URL}/seller/litiges`, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+    const data = await response.json();
+    return { success: response.ok, data: data.data || [] };
+  }
+
+  async getTransactionLogs(transactionId: number): Promise<{ success: boolean; data: any[] }> {
+    const response = await fetch(`${API_BASE_URL}/transactions/${transactionId}/logs`, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+    const data = await response.json();
+    return { success: response.ok, data: data.data || [] };
+  }
+
+  async adminResolveLitige(id: number, decision: 'resolue_vendeur' | 'resolue_acheteur', note: string): Promise<{ success: boolean; message: string }> {
+    const response = await fetch(`${API_BASE_URL}/admin/litiges/${id}/resolve`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ decision, resolution_note: note }),
+    });
+    const data = await response.json();
+    return { success: response.ok, message: data.message };
+  }
+
+  async adminLogin(credentials: any): Promise<{ success: boolean; data: any }> {
+    const response = await fetch(`${API_BASE_URL}/admin/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+    const data = await response.json();
+    return { success: response.ok, data };
+  }
 }
 
 export const escrowService = new EscrowService();

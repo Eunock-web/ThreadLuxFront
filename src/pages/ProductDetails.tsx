@@ -10,7 +10,7 @@ import { Heart, Star, Truck, RotateCcw } from "lucide-react";
 
 const ProductDetails: React.FC = () => {
   const { id } = Route.useParams();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { addToCart } = useCart();
   const queryClient = useQueryClient();
 
@@ -148,20 +148,33 @@ const ProductDetails: React.FC = () => {
                 </div>
              </div>
 
-             {/* Actions */}
-             <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <div className="flex items-center justify-between border-2 border-slate-200 rounded-full px-6 py-4 w-full sm:w-40 shrink-0">
-                   <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-slate-400 hover:text-slate-900 font-black text-xl leading-none">-</button>
-                   <span className="font-bold text-slate-900 text-lg leading-none">{quantity}</span>
-                   <button onClick={() => setQuantity(quantity + 1)} className="text-slate-400 hover:text-slate-900 font-black text-xl leading-none">+</button>
-                </div>
-                <button 
-                  onClick={() => addToCart({ id: Number(id), name: product.name, price: Number(product.prix), image: product.images?.[0]?.url_image || '', quantity, size: selectedSize })}
-                  className="flex-1 bg-[var(--color-pink)] hover:bg-[#A90F5E] shadow-xl shadow-[var(--color-pink-dim)] text-white rounded-full flex items-center justify-center font-bold tracking-wide transition-all transform hover:-translate-y-1 py-4 sm:py-0"
-                >
-                  Ajouter au panier
-                </button>
-             </div>
+              {/* Actions */}
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                {isAuthenticated && (user?.role === 'vendeur' || user?.role === 'admin') ? (
+                  <div className="flex-1 p-4 rounded-3xl bg-blue-50 border border-blue-100 flex items-center gap-3">
+                     <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600">
+                        <ShieldCheck size={20} />
+                     </div>
+                     <p className="text-[10px] font-bold text-blue-700 leading-snug uppercase tracking-widest">
+                        Mode Vendeur Actif : Les achats sont limités aux comptes clients.
+                     </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between border-2 border-slate-200 rounded-full px-6 py-4 w-full sm:w-40 shrink-0">
+                       <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-slate-400 hover:text-slate-900 font-black text-xl leading-none">-</button>
+                       <span className="font-bold text-slate-900 text-lg leading-none">{quantity}</span>
+                       <button onClick={() => setQuantity(quantity + 1)} className="text-slate-400 hover:text-slate-900 font-black text-xl leading-none">+</button>
+                    </div>
+                    <button 
+                      onClick={() => addToCart({ id: Number(id), name: product.name, price: Number(product.prix), image: product.images?.[0]?.url_image || '', quantity, size: selectedSize })}
+                      className="flex-1 bg-[var(--color-pink)] hover:bg-[#A90F5E] shadow-xl shadow-[var(--color-pink-dim)] text-white rounded-full flex items-center justify-center font-bold tracking-wide transition-all transform hover:-translate-y-1 py-4 sm:py-0"
+                    >
+                      Ajouter au panier
+                    </button>
+                  </>
+                )}
+              </div>
              
              <button 
                 onClick={handleToggleFavoris}
