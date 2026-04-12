@@ -23,6 +23,8 @@ const Payouts: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['pending-payouts'] });
       if (data.success) {
         alert(data.message || "Fonds débloqués avec succès !");
+      } else {
+        alert("Erreur : " + (data.message || "Le déblocage a échoué."));
       }
     },
     onError: (error: any) => {

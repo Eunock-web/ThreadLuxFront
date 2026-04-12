@@ -44,12 +44,27 @@ class EscrowService {
   }
 
   async releaseFunds(transactionId: number): Promise<{ success: boolean; message: string }> {
-    const response = await fetch(`${API_BASE_URL}/seller/escrow/release/${transactionId}`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-    });
-    const data = await response.json();
-    return { success: response.ok, message: data.message };
+    try {
+      const response = await fetch(`${API_BASE_URL}/seller/escrow/release/${transactionId}`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+      });
+      
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        const data = await response.json();
+        return { success: response.ok, message: data.message || "Opération terminée" };
+      } else {
+        // Handle non-JSON response (like a 500 HTML error page)
+        if (!response.ok) {
+          throw new Error(`Erreur serveur (${response.status})`);
+        }
+        return { success: true, message: "Succès" };
+      }
+    } catch (error: any) {
+      console.error("Release funds error:", error);
+      return { success: false, message: error.message || "Une erreur réseau est survenue" };
+    }
   }
 
   async getLitiges(): Promise<{ success: boolean; data: any[] }> {
