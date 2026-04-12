@@ -64,6 +64,9 @@ class AuthService {
     const result = await this.handleResponse(response);
     if (result.success && result.token) {
       localStorage.setItem('auth_token', result.token);
+      if (result.user) {
+        localStorage.setItem('auth_user', JSON.stringify(result.user));
+      }
     }
     return result;
   }
@@ -77,6 +80,9 @@ class AuthService {
     const result = await this.handleResponse(response);
     if (result.success && result.token) {
       localStorage.setItem('auth_token', result.token);
+      if (result.user) {
+        localStorage.setItem('auth_user', JSON.stringify(result.user));
+      }
     }
     return result;
   }
@@ -90,6 +96,9 @@ class AuthService {
     const result = await this.handleResponse(response);
     if (result.success && result.token) {
       localStorage.setItem('auth_token', result.token);
+      if (result.user) {
+        localStorage.setItem('auth_user', JSON.stringify(result.user));
+      }
     }
     return result;
   }
@@ -102,6 +111,7 @@ class AuthService {
     const result = await this.handleResponse(response);
     if (result.success) {
       localStorage.removeItem('auth_token');
+      localStorage.removeItem('auth_user');
     }
     return result;
   }
@@ -116,8 +126,12 @@ class AuthService {
         headers: this.getHeaders(),
       });
       if (response.ok) {
-        return await response.json();
+        const user = await response.json();
+        localStorage.setItem('auth_user', JSON.stringify(user));
+        return user;
       }
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('auth_user');
       return null;
     } catch (error) {
       return null;
