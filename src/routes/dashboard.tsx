@@ -16,7 +16,7 @@ export const Route = createFileRoute('/dashboard')({
     }
 
     const user = JSON.parse(userStr);
-    if (!['vendeur', 'admin'].includes(user.role)) {
+    if (user.role !== 'vendeur') {
       throw redirect({ to: '/' })
     }
   },

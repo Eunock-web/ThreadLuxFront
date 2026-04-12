@@ -22,7 +22,7 @@ export const BuyerLayout: React.FC<BuyerLayoutProps> = ({ children }) => {
   const location = useLocation();
 
   const menuItems = [
-    { icon: <LayoutDashboard size={20} />, label: "Dashboard", href: "/dashboard" },
+    { icon: <LayoutDashboard size={20} />, label: "Dashboard", href: "/account" },
     { icon: <ShoppingBag size={20} />, label: "Orders", href: "/dashboard/orders" },
     { icon: <Heart size={20} />, label: "Wishlist", href: "/dashboard/wishlist" },
     { icon: <Settings size={20} />, label: "Settings", href: "/dashboard/settings" },

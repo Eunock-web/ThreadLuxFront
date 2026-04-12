@@ -38,7 +38,7 @@ const Payouts: React.FC = () => {
 
   const filteredPayouts = payouts?.data?.filter((p: Payout) => 
     p.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.acheteur?.email.toLowerCase().includes(searchTerm.toLowerCase())
+    (p.acheteur?.email && p.acheteur.email.toLowerCase().includes(searchTerm.toLowerCase()))
   ) || [];
 
   const totalAmount = filteredPayouts.reduce((acc: number, curr: Payout) => acc + parseFloat(curr.amount), 0);
@@ -119,8 +119,17 @@ const Payouts: React.FC = () => {
                             </div>
                           </td>
                           <td className="py-6 px-4">
-                            <p className="text-xs font-black text-slate-900 leading-none mb-1">{p.acheteur?.firstname} {p.acheteur?.lastname}</p>
-                            <p className="text-[9px] font-bold text-slate-400">{p.acheteur?.email}</p>
+                            {p.acheteur ? (
+                              <>
+                                <p className="text-xs font-black text-slate-900 leading-none mb-1">{p.acheteur.firstname} {p.acheteur.lastname}</p>
+                                <p className="text-[9px] font-bold text-slate-400">{p.acheteur.email}</p>
+                              </>
+                            ) : (
+                              <>
+                                <p className="text-xs font-black text-slate-500 italic leading-none mb-1">Client Invité</p>
+                                <p className="text-[9px] font-bold text-slate-400">Pas de compte</p>
+                              </>
+                            )}
                           </td>
                           <td className="py-6 px-4">
                             <span className="text-sm font-black text-slate-900 italic tracking-tighter">
